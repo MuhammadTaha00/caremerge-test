@@ -1,0 +1,21 @@
+{
+  "name": "caremerge-test",
+  "version": "1.0.0",
+  "description": "recuirment test",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "author": "M.Taha",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "async": "^3.2.0",
+    "axios": "^0.21.1",
+    "express": "^4.17.1",
+    "rsvp": "^4.8.5"
+  }
+}
