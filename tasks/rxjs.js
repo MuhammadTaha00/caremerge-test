@@ -1,55 +1,28 @@
-const fetchTitle = require("../utils/fetchTitle");
+const { RxHR } = require("@akanass/rx-http-request");
+const { map } = require("rxjs/operators");
+const { from } = require("rxjs");
+const getContentByTag = require("../utils/getContentByTag");
 const prepareHtmlResponse = require("../utils/prepareHtmlResponse");
-const combineLatest = require("rxjs");
-const { Observable } = require("rxjs/Observable");
-const { map, flatMap } = require("rxjs/operators");
 
 module.exports = async (req, res, next) => {
-  const {
-    query: { address },
-  } = req;
-  try {
-    if (Array.isArray(address)) {
-      function fetchTitles(
-        addresses,
-        callback = () => {},
-        count = 0,
-        titles = []
-      ) {
-        if (count === addresses.length) {
-          callback(null, titles);
-        } else
-          fetchTitle(addresses[count], (err, title) => {
-            if (err) {
-              callback(err);
-            } else {
-              count++;
-              runner(addresses, callback, count, [...titles, title]);
-            }
-          });
-      }
-      fetchTitles(address, (err, titles) => {
-        if (err) {
-          next(err);
-        } else {
-          res.send(prepareHtmlResponse(titles));
-        }
+  //let form(titles);
+  let titles = [];
+  //from(titles);
+  const addresses$ = from([
+    "https://www.google.com",
+    "https://stackoverflow.com",
+    "https://www.bmc.com",
+  ]);
+
+  const titles$ = addresses$.pipe(
+    map((address) => {
+      return RxHR.get(address).subscribe((r) => {
+        const title = getContentByTag(r.body, "title");
+        titles.push(title);
+        console.log(title);
       });
-    } else {
-      var fetchContent = function (url) {
-        return rx.Observable.create(function (observer) {
-          https.get(url, function (error, response, body) {
-            if (error) {
-              observer.onError();
-            } else {
-              observer.onNext({ response: response, body: body });
-            }
-            observer.onCompleted();
-          });
-        });
-      };
-    }
-  } catch (err) {
-    next(err);
-  }
+    })
+  );
+
+  titles$.subscribe((titles) => console.log(titles));
 };
